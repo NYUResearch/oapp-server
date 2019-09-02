@@ -1,0 +1,9 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+
+<form action="/recognize" method="post" enctype="multipart/form-data">
+    <input type="file" name="face_image" />
+    <input type="submit" value="Submit">
+</form>
+
+<img src="/uploads/{{image}}">
