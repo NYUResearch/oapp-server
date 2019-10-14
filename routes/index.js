@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var multer  = require('multer')
-const {PythonShell} = require('python-shell')
+var multer = require('multer')
+var admin = require("firebase-admin");
+const uuid = require('uuid/v1');
+const { PythonShell } = require('python-shell');
 
 var fileName;
 
@@ -14,29 +16,75 @@ var storage = multer.diskStorage({
     cb(null, fileName)
   }
 })
- 
-var upload = multer({ storage: storage })
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+var upload = multer({ storage: storage });
+var db = admin.database();
+
+router.get('/', function (req, res) {
   res.render('index', { title: 'Express', image: fileName });
 });
 
-router.post('/recognize', upload.single('face_image'), function (req, res, next) {
-    const file = req.file;
-    const body = req.body;
+router.post('/recognize', upload.single('face_image'), function (req, res) {
+  const file = req.file;
+  const body = req.body;
 
-    const spawn = require("child_process").spawn;
-    const pythonProcess = spawn('python3',["/Users/personal/Desktop/oapp-server/OApp-master/Source/node-test.py"]);
+  let pillId = body.pill_number;
+  let userId = body.user_id;
 
-    pythonProcess.stdout.on('data', (data) => {
-      // Do something with the data returned from python script
-      var results = data.toString().split('\n');
-      console.log(results);
-      res.send(results);
+  // Sameple script: python3 demo.py --test_data_path=M5_1.mp4 --expected="M5" --name="xiyuan"
+
+  let options = {
+    scriptPath: '/Users/personal/Desktop/oapp-server/oapp-python/python',
+    args: ['--test_data_path', '/Users/personal/Desktop/oapp-server/oapp-python/Images/M5_1.mp4', '--expected', pillId, '--name', userId]
+  };
+
+  var ref = db.ref(userId);
+  let shell = new PythonShell('demo.py', options);
+  var sessionId = uuid();
+
+  var timestamp = Date.now();
+  ref.child(sessionId + '/' + timestamp).set({
+    message: "Starting ::: Loading",
+    timestamp: timestamp
+  });
+
+  shell.on('message', function (message) {
+    console.log(message);
+
+    var timestamp = Date.now();
+    ref.child(sessionId + '/' + timestamp).set({
+      message: message,
+      timestamp: timestamp
     });
+  });
 
-    // res.redirect('/');
-})
+  shell.end(function (err, code, signal) {
+    if (err) {
+      console.log(err);
+      var timestamp = Date.now();
+      ref.child(sessionId + '/' + timestamp).set({
+        message: err,
+        timestamp: timestamp
+      });
+    };
+    console.log('The exit code was: ' + code);
+    console.log('The exit signal was: ' + signal);
+    console.log('finished');
+
+    var timestamp = Date.now();
+    ref.child(sessionId + '/' + timestamp).set({
+      message: 'Finished ::: The exit code was: ' + code,
+      timestamp: timestamp
+    });
+  });
+
+  res.redirect(`/results/${userId}/${sessionId}`);
+});
+
+router.get('/results/:userId/:sessionId', function (req, res) {
+  const userId = req.params.userId;
+  const sessionId = req.params.sessionId;
+  res.render('result', { user: userId, session: sessionId });
+});
 
 module.exports = router;

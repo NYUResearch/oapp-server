@@ -2,8 +2,8 @@
 <p>Welcome to {{title}}</p>
 
 <form action="/recognize" method="post" enctype="multipart/form-data">
-    <input type="file" name="face_image" />
+    Expected Pill ID: <input type="text" name="pill_number" value="M5">
+    User ID: <input type="text" name="user_id" value="xiyuan">
+    Video: <input type="file" name="face_image" />
     <input type="submit" value="Submit">
 </form>
-
-<img src="/uploads/{{image}}">

@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>{{title}}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    {{{body}}}
-  </body>
+
+<head>
+  <title>{{title}}</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.2.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-database.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAs4966S6RDfk6Ir-_DQJuu1R8r1q4OPg8",
+    authDomain: "oapp-23d6b.firebaseapp.com",
+    databaseURL: "https://oapp-23d6b.firebaseio.com",
+    projectId: "oapp-23d6b",
+    storageBucket: "oapp-23d6b.appspot.com",
+    messagingSenderId: "355708972375",
+    appId: "1:355708972375:web:a2d7d2786c30ad4177e212"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<body>
+  {{{body}}}
+</body>
+
 </html>

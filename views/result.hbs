@@ -1,0 +1,32 @@
+<h1>Output</h1>
+<b>User identity:</b> <p id="user">{{user}}</p>
+<b>Session ID:</b><p id="session">{{session}}</p>
+<b>Live stream (data): </b> <a href="/results/{{user}}/{{session}}">Click here</a><br><br>
+<b>Results:</b> <p id="result"></p>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", main);
+
+    function main() {
+        var user = document.getElementById("user").innerHTML;
+        var session = document.getElementById("session").innerHTML;
+        var element = document.getElementById("result");
+        var dbref = "/" + user + "/" + session + "";
+
+        console.log(dbref);
+
+        var userRef = firebase.database().ref(dbref);
+        userRef.on('value', function (snapshot) {
+            element.innerHTML = "";
+            snapshot.forEach(function (log) {
+                var obj = log.val();
+                console.log(obj);
+                element.innerHTML += `${obj.timestamp} ::: ${obj.message} <br>`;
+            });
+        });
+    }
+
+
+
+</script>
